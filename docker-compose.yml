@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  mcp-google-sheets-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-google-sheets-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Google credentials configuration
+      - SERVICE_ACCOUNT_PATH=/app/credentials/service-account.json
+      - CREDENTIALS_PATH=/app/credentials/credentials.json
+      - TOKEN_PATH=/app/credentials/token.json
+      # Optional: Google Drive folder ID for working directory
+      - DRIVE_FOLDER_ID=${DRIVE_FOLDER_ID:-}
+      # API configuration
+      - API_KEYS_FILE=/app/config/api_keys.json
+      # Server configuration
+      - HOST=0.0.0.0
+      - PORT=8080
+    volumes:
+      # Mount credentials directory
+      - ./credentials:/app/credentials:ro
+      # Mount config directory for API keys
+      - ./config:/app/config:ro
+      # Optional: Mount for development
+      # - ./src:/app/src:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Nginx reverse proxy for production
+  nginx:
+    image: nginx:alpine
+    container_name: mcp-google-sheets-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - mcp-google-sheets-api
+    profiles:
+      - production
+
+  # Optional: Redis for rate limiting and caching
+  redis:
+    image: redis:7-alpine
+    container_name: mcp-google-sheets-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    profiles:
+      - production
+
+volumes:
+  redis_data:
+
+networks:
+  default:
+    name: mcp-google-sheets-network

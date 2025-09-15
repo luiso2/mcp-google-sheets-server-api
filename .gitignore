@@ -1,0 +1,60 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Credentials and sensitive files
+**/credentials.json
+**/token.json
+**/service_account.json
+**/service-account.json
+credentials/
+config/api_keys.json
+*.json
+!pyproject.toml
+!claude_config.json
+!package.json
+!package-lock.json
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Claude configuration (keep template but ignore local settings)
+.claude/settings.local.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Docker
+.dockerignore

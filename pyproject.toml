@@ -1,0 +1,39 @@
+[project]
+name = "mcp-google-sheets"
+dynamic = ["version"]
+description = "This MCP server integrates with your Google Drive and Google Sheets, to enable creating and modifying spreadsheets."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.5.0",
+    "google-auth>=2.28.1",
+    "google-auth-oauthlib>=1.2.0",
+    "google-api-python-client>=2.117.0",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.0.0",
+    "requests>=2.31.0",
+]
+[[project.authors]]
+name = "Luis Osorio"
+email = "luiso2@example.com"
+
+[project.urls]
+"Homepage" = "https://github.com/luiso2/mcp-google-sheets-server-api"
+"Bug Tracker" = "https://github.com/luiso2/mcp-google-sheets-server-api/issues"
+"Repository" = "https://github.com/luiso2/mcp-google-sheets-server-api.git"
+
+[build-system]
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+pattern = "default"
+strict = true
+
+[project.scripts]
+mcp-google-sheets = "mcp_google_sheets:main"
+mcp-google-sheets-api = "mcp_google_sheets.api.http_server:start_server"
