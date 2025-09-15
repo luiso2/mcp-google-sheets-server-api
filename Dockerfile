@@ -4,6 +4,7 @@ FROM python:3.10-slim as builder
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
