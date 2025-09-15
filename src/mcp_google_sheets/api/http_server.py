@@ -164,7 +164,7 @@ async def lifespan(app: FastAPI):
 
     # Initialize MCP context
     print("Initializing Google Sheets services...")
-    async for context in mcp_lifespan(None):
+    async with mcp_lifespan(None) as context:
         spreadsheet_context = context
         print("Google Sheets services initialized")
         yield
