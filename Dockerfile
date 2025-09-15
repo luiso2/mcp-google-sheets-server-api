@@ -12,6 +12,7 @@ WORKDIR /app
 
 # Copy requirements first for better caching
 COPY pyproject.toml ./
+COPY README.md ./
 COPY src/ ./src/
 
 # Install uv for faster dependency installation
