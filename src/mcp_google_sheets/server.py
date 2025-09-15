@@ -26,6 +26,7 @@ import google.auth
 # Constants
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
 CREDENTIALS_CONFIG = os.environ.get('CREDENTIALS_CONFIG')
+GOOGLE_APPLICATION_CREDENTIALS_JSON = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
 TOKEN_PATH = os.environ.get('TOKEN_PATH', 'token.json')
 CREDENTIALS_PATH = os.environ.get('CREDENTIALS_PATH', 'credentials.json')
 SERVICE_ACCOUNT_PATH = os.environ.get('SERVICE_ACCOUNT_PATH', 'service_account.json')
@@ -47,6 +48,25 @@ async def spreadsheet_lifespan(server: FastMCP) -> AsyncIterator[SpreadsheetCont
 
     if CREDENTIALS_CONFIG:
         creds = service_account.Credentials.from_service_account_info(json.loads(base64.b64decode(CREDENTIALS_CONFIG)), scopes=SCOPES)
+    
+    # Check for Google Application Credentials JSON from environment variable
+    if not creds and GOOGLE_APPLICATION_CREDENTIALS_JSON:
+        try:
+            # Parse the JSON from the environment variable
+            if isinstance(GOOGLE_APPLICATION_CREDENTIALS_JSON, str):
+                service_account_info = json.loads(GOOGLE_APPLICATION_CREDENTIALS_JSON)
+            else:
+                service_account_info = GOOGLE_APPLICATION_CREDENTIALS_JSON
+            
+            creds = service_account.Credentials.from_service_account_info(
+                service_account_info,
+                scopes=SCOPES
+            )
+            print("Using Google Application Credentials from environment variable")
+            print(f"Working with Google Drive folder ID: {DRIVE_FOLDER_ID or 'Not specified'}")
+        except Exception as e:
+            print(f"Error using Google Application Credentials JSON: {e}")
+            creds = None
     
     # Check for explicit service account authentication first (custom SERVICE_ACCOUNT_PATH)
     if not creds and SERVICE_ACCOUNT_PATH and os.path.exists(SERVICE_ACCOUNT_PATH):

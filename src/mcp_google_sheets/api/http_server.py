@@ -104,13 +104,30 @@ class MockContext:
 
 
 def load_api_keys():
-    """Load API keys from file"""
+    """Load API keys from file or environment variable"""
     global API_KEYS
+    
+    # First try to load from environment variable
+    api_keys_json = os.environ.get('API_KEYS_JSON')
+    if api_keys_json:
+        try:
+            API_KEYS = json.loads(api_keys_json)
+            print(f"Loaded {len(API_KEYS)} API keys from environment variable")
+            return
+        except Exception as e:
+            print(f"Error loading API keys from environment: {e}")
+    
+    # Fall back to file
     if os.path.exists(API_KEYS_FILE):
         try:
             with open(API_KEYS_FILE, 'r') as f:
-                API_KEYS = json.load(f)
-                print(f"Loaded {len(API_KEYS)} API keys")
+                data = json.load(f)
+                # Check if it has an 'api_keys' field (new format) or use as-is (old format)
+                if 'api_keys' in data:
+                    API_KEYS = data['api_keys']
+                else:
+                    API_KEYS = data
+                print(f"Loaded {len(API_KEYS)} API keys from file")
         except Exception as e:
             print(f"Error loading API keys: {e}")
             API_KEYS = {}
